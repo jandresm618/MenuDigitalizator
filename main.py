@@ -1,27 +1,57 @@
 from Builtin_functions import *
 import os
+from ImageInfo import *
 
-project_dir = os.getcwd()
-image_path = os.path.join(project_dir, 'Images', 'MenuExample.png')
-image_path2 = os.path.join(project_dir, 'Images', 'duetorre.png')
-img = cv2.imread(image_path2,0)
-print(img.shape)
-#imgshow(img,"Imagen original")
 
-#kernel = cv2.getGaussianKernel((5, 5), 2)
-#print(kernel)
-kernel = (3, 3)
-imagen_suavizada = cv2.GaussianBlur(img, kernel, 2)
-imgshow(imagen_suavizada,"Imagen con filtro Gaussiano")
+image_path = select_image()
 
-kernel=np.ones(kernel, np.uint8)
-erode=img.copy()
+if not image_path:
+    print("No se seleccionó ninguna imagen.")
+    exit()
+else:
 
-for i in range(0, 4):
+    # ****** Cargar Imagen **************
+    binary_image = preprocessing(image_path)
+
+    #plot_pixel_info(image_path)
+    sum_y_normalized, sum_x_normalized = imageHist(image_path)
+
+    threshold_y = float(input("Ingresar umbral en y: "))
+    threshold_x = float(input("Ingresar umbral en x: "))
+
+    positions_y = detect_positions_above_threshold(sum_y_normalized, threshold_y)
+    positions_x = detect_positions_above_threshold(sum_x_normalized, threshold_x)
+
+    # Encontrar regiones de interés en Y y X
+    regions_y = find_regions(positions_y)
+    regions_x = find_regions(positions_x)
+
+    plot_image_histogram(binary_image,sum_x_normalized,sum_y_normalized,threshold_x,threshold_y)
+
+    plot_rois(binary_image,sum_x_normalized,sum_y_normalized,threshold_x,threshold_y,regions_x,regions_y)
+
+    templates = setTemplates() # Generar templates de caracteres
+
+    # Crear plantillas simples de caracteres
+    templates = {
+        'A': np.array([[0, 1, 1, 1, 0],
+                    [1, 0, 0, 0, 1],
+                    [1, 1, 1, 1, 1],
+                    [1, 0, 0, 0, 1],
+                    [1, 0, 0, 0, 1]]),
+        # Añadir más plantillas según sea necesario
+    }
+
+    process_image(binary_image, templates)
+
     
-    dilate = cv2.dilate(erode, kernel)
-    a=("Erosionado{"+str(i+1)+"} times")
-    imgshow(dilate,a)
 
+    
 
+    
 
+    
+
+    
+
+    
