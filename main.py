@@ -32,15 +32,6 @@ else:
 
     templates = setTemplates() # Generar templates de caracteres
 
-    # Crear plantillas simples de caracteres
-    templates = {
-        'A': np.array([[0, 1, 1, 1, 0],
-                    [1, 0, 0, 0, 1],
-                    [1, 1, 1, 1, 1],
-                    [1, 0, 0, 0, 1],
-                    [1, 0, 0, 0, 1]]),
-        # Añadir más plantillas según sea necesario
-    }
 
     process_image(binary_image, templates)
 
